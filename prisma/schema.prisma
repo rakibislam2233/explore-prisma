@@ -1,0 +1,64 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int         @id @default(autoincrement())
+  name      String
+  email     String      @unique
+  age       Int
+  teams     UserTeams[]  // Many-to-Many সম্পর্ক User এবং Teams এর মধ্যে
+  ledTeams   Teams[]
+
+  @@map("users")
+  @@index([email, name])
+}
+
+model Teams {
+  id        Int         @id @default(autoincrement())
+  name      String
+  leaderId  Int         @unique
+  leader    User        @relation(fields: [leaderId], references: [id])
+  userTeams UserTeams[]  // Many-to-Many সম্পর্ক Teams এবং User এর মধ্যে
+
+  @@map("teams")
+  @@index([name])
+}
+
+model UserTeams {
+  user     User   @relation(fields: [userId], references: [id])
+  userId   Int
+  team     Teams  @relation(fields: [teamId], references: [id])
+  teamId   Int
+
+  @@id([userId, teamId])  // Composite Primary Key (Many-to-Many সম্পর্কের জন্য)
+  @@map("users_teams")
+}
+
+model Projects {
+  id          Int       @id @default(autoincrement())
+  title       String
+  description String?
+  tasks       Tasks[]   // One-to-Many সম্পর্ক Projects এবং Tasks এর মধ্যে
+
+  @@map("projects")
+  @@index([title])
+}
+
+model Tasks {
+  id            Int      @id @default(autoincrement())
+  title         String
+  project_id    Int
+  project       Projects  @relation(fields: [project_id], references: [id])  // One-to-Many সম্পর্ক Projects এবং Tasks এর মধ্যে
+  parent_task_id Int?    // Self-referencing field for subtasks
+  parentTask     Tasks?  @relation("SubTasks", fields: [parent_task_id], references: [id])  // Self-referencing সম্পর্ক
+  subtasks       Tasks[] @relation("SubTasks")  // একটি টাস্কের সাব-টাস্কগুলো
+
+  @@map("tasks")
+  @@index([title])
+}
