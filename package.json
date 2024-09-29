@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "dev": "ts-node-dev --respawn --transpile-only src/create.ts",
+    "dev": "ts-node-dev --respawn --transpile-only src/update.ts",
     "migrate": "npx prisma migrate dev",
     "studio": "npx prisma studio"
   },
@@ -11,7 +11,7 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@types/node": "^22.7.3",
+    "@types/node": "^22.7.4",
     "prisma": "^5.20.0",
     "ts-node": "^10.9.2",
     "typescript": "^5.6.2"
